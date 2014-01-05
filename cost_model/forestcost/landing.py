@@ -1,69 +1,51 @@
 # Determines landing coordinates on closest road to property
 
-import requests
-import json
 import ogr
-import osr
-import os
-import tempfile
-ogr.UseExceptions()
+from sys import maxint
+from math import sqrt
 
 
-def landing(shpfn=None, centroid_coords=None):
-    if centroid_coords is None:
+def landing(stand_wkt,roadfn):
+    
+    #stand centroid
+    geom = ogr.CreateGeometryFromWkt(stand_wkt)
+    centroid_geom = geom.Centroid()
+    centroidLon = centroid_geom.GetX()  # Get X coordinates
+    centroidLat = centroid_geom.GetY()  # Get Y cooridnates
+    
+
+    
+    #find closest point on road to stand
+    road_shp = ogr.Open(roadfn)
+    lyr = road_shp.GetLayer()
+    feat = lyr.GetNextFeature()
+    geom = feat.GetGeometryRef()
+    
+    min_dist = maxint
+
+    for line in geom:
+        dist1 = sqrt((centroidLat-line.GetY(0))**2+(centroidLon-line.GetX(0))**2)
+        dist2 = sqrt((centroidLat-line.GetY(1))**2+(centroidLon-line.GetX(1))**2)
+    
+        if dist1<dist2:
+            cur_dist = dist1
+            nearest_point = line.GetPoint(0)
+            if cur_dist < min_dist:
+                min_dist = cur_dist
+                landing_coords = nearest_point
         
-        stand_shp = ogr.Open(shpfn)
-        lyr = stand_shp.GetLayer()
-        numFeatures = lyr.GetFeatureCount()
-        FID = 0
-        centroidLonList = []
-        centroidLatList = []
+        elif dist1>dist2:
+            cur_dist = dist2
+            nearest_point = line.GetPoint(1)
+            if cur_dist < min_dist:
+                min_dist = cur_dist
+                landing_coords = nearest_point
+        
+        else:
+            sys.exit('ERROR: Could not find landing for stand')
+    
+    landing_coords = landing_coords[:-1]
 
-        # get centroids of stands
-        while FID < numFeatures:
-            feat = lyr.GetFeature(FID)
-            geom = feat.GetGeometryRef()
+    return landing_coords
+    
 
-            # Transform from Web Mercator to WGS84
-            sourceSR = lyr.GetSpatialRef()
-            targetSR = osr.SpatialReference()
-            targetSR.ImportFromEPSG(4326)  # WGS84
-            coordTrans = osr.CoordinateTransformation(sourceSR, targetSR)
-            geom.Transform(coordTrans)
-
-            # Create centroid of harvest area
-            centroid_geom = geom.Centroid()
-            centroidLon = centroid_geom.GetX()  # Get X coordinates
-            centroidLat = centroid_geom.GetY()  # Get Y cooridnates
-            centroidLonList.append(centroidLon)
-            centroidLatList.append(centroidLat)
-            FID += 1
-
-        # calcualte centroid of all stands
-        centroidLon = sum(centroidLonList)/numFeatures
-        centroidLat = sum(centroidLatList)/numFeatures
-    else:
-        centroidLon = centroid_coords[0]
-        centroidLat = centroid_coords[1]
-
-    # get nearest point on road from centroid as json string
-    headers = {'User-Agent': 'Forestry Scenario Planner'}
-    url = "http://router.project-osrm.org/nearest?loc=%f,%f" % (centroidLat, centroidLon)
-    tmp = tempfile.gettempdir()
-    key = os.path.join(tmp, "%s_%s-None.cache" % (centroidLat, centroidLon))
-    if os.path.exists(key):
-        # READING FROM CACHE
-        with open(key, 'r') as cache:
-            data = json.loads(cache.read())
-    else:
-        response = requests.get(url, headers=headers)
-        binary = response.content
-        data = json.loads(binary)
-        # WRITING TO CACHE
-        with open(key, 'w') as cache:
-            cache.write(json.dumps(data))
-
-    # parse json string for landing coordinate
-    landing_lat, landing_lon = data['mapped_coordinate']
-
-    return (landing_lon, landing_lat)

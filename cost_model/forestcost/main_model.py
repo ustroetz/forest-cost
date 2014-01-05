@@ -11,10 +11,10 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
               PartialCut, landing_coords, haulDist, haulTime, coord_mill, NoHelicopter = False, NoHaulProportion = 1):
 
     #############################################
-    # Skid Distance, Haul Distance Extension    #
+    # Skid Distance, Stand Landing              #
     #############################################
-    SkidDist, HaulDistExtension, coord_landing_stand = skidding.skidding(stand_wkt, landing_coords, Slope)
-    HaulDistExtension = round(HaulDistExtension*0.000189394, 3)  # convert to miles 
+    SkidDist, coord_landing_stand = skidding.skidding(stand_wkt, landing_coords, Slope)
+    print SkidDist, coord_landing_stand
 
     #############################################
     # Harvest Cost                              #
@@ -37,12 +37,8 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
     totalHaulCost = 0.0
 
     if haulDist > 0.00001:
-        haulDist = haulDist + HaulDistExtension  # in miles
         haulDist = round(haulDist, 2)
-        if HaulDistExtension > 0:
-            haulTimeRT = haulTime*2.0+HaulDistExtension*2.0/(30*60.0)  # round trip time plus travel time on extension
-        else:
-            haulTimeRT = haulTime*2.0  # round trip time
+        haulTimeRT = haulTime*2.0  # round trip time
         haulCost = hauling.haulcost(haulDist, haulTimeRT)  # returns haul cost per minute
 
         # stinger-steer log truck avg volume per load (7 CCF small timber to 10 CCF large timber)
@@ -68,7 +64,6 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
         'harvest_system': (HarvestSystem),
         'harvest_cost_ft3': harvestCost,
         'total_harvest_cost': totalHarvestCost,
-        'haul_distance_extension': HaulDistExtension,
         'haul_distance_ow': haulDist,
         'haul_time_ow': haulTime,
         'total_haul_trips': trips,
