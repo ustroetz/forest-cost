@@ -11,15 +11,13 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
               PartialCut, landing_coords, haulDist, haulTime, coord_mill, NoHelicopter = False, NoHaulProportion = 1):
 
     #############################################
-    # Skid Distance, Stand Landing              #
+    # Skid Distance, Stand landing coords    #
     #############################################
-    SkidDist, coord_landing_stand = skidding.skidding(stand_wkt, landing_coords, Slope)
-    print SkidDist, coord_landing_stand
+    SkidDist, coord_landing_stand = skidding.skidding(stand_wkt, landing_coords)
 
     #############################################
     # Harvest Cost                              #
     #############################################
-    SkidDist = 100
     harvest_result = harvesting.harvestcost(PartialCut, Slope, SkidDist, Elevation, RemovalsCT, TreeVolCT, RemovalsSLT, TreeVolSLT, RemovalsLLT, TreeVolLLT, HdwdFractionCT, HdwdFractionSLT, HdwdFractionLLT, NoHelicopter,NoHaulProportion)
     harvestCost, HarvestSystem = harvest_result  # returns harvest cost per CCF and Harvesting System
 

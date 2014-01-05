@@ -3,7 +3,7 @@ import osr
 ogr.UseExceptions()
 
 
-def skidding(stand_wkt, landing_coords, Slope):
+def skidding(stand_wkt, landing_coords):
 
     # create landing geometry
     landing_geom = ogr.Geometry(ogr.wkbPoint)
@@ -21,6 +21,7 @@ def skidding(stand_wkt, landing_coords, Slope):
     skidLine.AddPoint_2D(landing_geom.GetX(), landing_geom.GetY())
 
     skid_dist = centroid_geom.Distance(landing_geom)
+    skid_dist = round((skid_dist)*3.28084, 2)  # convert to feet
     
     # Transform from WGS84 to Web Mercator
     inSR = landing_geom.GetSpatialReference()

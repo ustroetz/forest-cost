@@ -14,7 +14,7 @@ if __name__ == '__main__':
     stand_shp = ogr.Open(standfn)
     stand_lyr = stand_shp.GetLayer()
     
-    roadfn = 'testdata/newRoad1.shp'
+    roadfn = 'testdata/newRoad1.shp' # in EPSG 3857
     
     ### Mill information
     #mill_shp = 'testdata//mills.shp'
@@ -84,7 +84,7 @@ if __name__ == '__main__':
             coord_mill
         )
         
-       # pprint(cost)
+        pprint(cost)
 
 
 
