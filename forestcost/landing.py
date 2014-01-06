@@ -1,6 +1,7 @@
 # Determines landing coordinates on closest road to property
 
 import ogr,osr
+import sys
 from sys import maxint
 from math import sqrt
 
@@ -43,7 +44,8 @@ def stand(stand_wkt,roadfn):
                 sys.exit('ERROR: Could not find landing for stand')
     
     coords_landing_stand = coords_landing_stand[:-1]
-
+    
+    print "Stand Landing Created at: ", coords_landing_stand
     return coords_landing_stand
     
 def road(roadfn,standfn):
@@ -66,30 +68,29 @@ def road(roadfn,standfn):
         geom = feat.GetGeometryRef()
     
         min_dist = maxint
+        
+        for line in geom:
 
-        dist1 = sqrt((property_centroid.GetY()-geom.GetY(0))**2+(property_centroid.GetX()-geom.GetX(0))**2)
-        dist2 = sqrt((property_centroid.GetY()-geom.GetY(1))**2+(property_centroid.GetX()-geom.GetX(1))**2)
+            dist1 = sqrt((property_centroid.GetY()-line.GetY(0))**2+(property_centroid.GetX()-line.GetX(0))**2)
+            dist2 = sqrt((property_centroid.GetY()-line.GetY(1))**2+(property_centroid.GetX()-line.GetX(1))**2)
     
-        if dist1<dist2:
-            cur_dist = dist1
-            nearest_point = geom.GetPoint(0)
-            if cur_dist < min_dist:
-                min_dist = cur_dist
-                coords_landing_road = nearest_point
-            else:
-                sys.exit()
+            if dist1<dist2:
+                cur_dist = dist1
+                nearest_point = line.GetPoint(0)
+                if cur_dist < min_dist:
+                    min_dist = cur_dist
+                    coords_landing_road = nearest_point
+
         
-        elif dist1>dist2:
-            cur_dist = dist2
-            nearest_point = geom.GetPoint(1)
-            if cur_dist < min_dist:
-                min_dist = cur_dist
-                coords_landing_road = nearest_point
-            else:
-                sys.exit()
+            elif dist1>dist2:
+                cur_dist = dist2
+                nearest_point = line.GetPoint(1)
+                if cur_dist < min_dist:
+                    min_dist = cur_dist
+                    coords_landing_road = nearest_point
         
-        else:
-            sys.exit('ERROR: Could not find landing for stand')
+            else:
+                sys.exit('ERROR: Could not find landing for stand')
 
     # Transform from WGS84 to Web Mercator
     coords_landing_road_geom = ogr.Geometry(type=ogr.wkbPoint)
@@ -104,5 +105,6 @@ def road(roadfn,standfn):
     
     coords_landing_road = (coords_landing_road_geom.GetX(),coords_landing_road_geom.GetY())
         
+    print "Road Landing Created at: ", coords_landing_road
     return coords_landing_road
 
