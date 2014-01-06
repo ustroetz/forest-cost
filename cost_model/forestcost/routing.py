@@ -7,7 +7,7 @@ import tempfile
 
 
 def routing(landing_coords, mill_coords=None, mill_shp=None, mill_filter=None):
-
+    
     if not (mill_coords or mill_shp):
         raise Exception("Either mill_coords or mill_shp is required")
 

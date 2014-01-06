@@ -1,6 +1,6 @@
 from forestcost import main_model as m
 from forestcost import routing as r
-from forestcost import landing as l
+from forestcost import landing
 from forestcost import gis
 from pprint import pprint
 import ogr
@@ -14,18 +14,17 @@ if __name__ == '__main__':
     stand_shp = ogr.Open(standfn)
     stand_lyr = stand_shp.GetLayer()
     
-    roadfn = 'testdata/newRoad1.shp' # in EPSG 3857
+    roadfn = 'testdata/newRoad2.shp' # in EPSG 3857
     
     ### Mill information
-    #mill_shp = 'testdata//mills.shp'
-    mill_coords = (-123.5677, 41.2564)
+    mill_shp = 'testdata/mills.shp'
+    #mill_coords = (-122.665014,45.519218)
 
     # Landing Coordinates
-    landing_coords =-123.23727, 45.625495
-    #haulDist, haulTime, coord_mill = 387.433517694, 496.48, mill_coords
+    coords_landing_road = landing.road(roadfn,standfn)
     
     # routing
-    haulDist, haulTime, coord_mill = r.routing(landing_coords,mill_coords)
+    haulDist, haulTime, coord_mill = r.routing(coords_landing_road,mill_coords=None, mill_shp=mill_shp)
         
     for stand in stand_lyr:
                 
@@ -37,7 +36,7 @@ if __name__ == '__main__':
         slope = gis.zonal_stats(slope_raster, standfn, stand_wkt)
         
         # stand landing coords
-        landing_coords = l.landing(stand_wkt,roadfn)        
+        coords_landing_stand = landing.stand(stand_wkt,roadfn)        
 
         ### Tree Data ###
         # Harvest Type (clear cut = 0, partial cut = 1)
@@ -78,7 +77,8 @@ if __name__ == '__main__':
             HdwdFractionLLT,
             PartialCut,
             # routing info
-            landing_coords,
+            coords_landing_stand,
+            coords_landing_road,
             haulDist,
             haulTime,
             coord_mill

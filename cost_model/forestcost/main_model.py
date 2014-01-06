@@ -8,12 +8,12 @@ import harvesting
 def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
               RemovalsSLT, TreeVolSLT, RemovalsLLT, TreeVolLLT,
               HdwdFractionCT, HdwdFractionSLT, HdwdFractionLLT,
-              PartialCut, landing_coords, haulDist, haulTime, coord_mill, NoHelicopter = False, NoHaulProportion = 1):
+              PartialCut, stand_landing_coords, coord_landing_road, haulDist, haulTime, coord_mill, NoHelicopter = False, NoHaulProportion = 1):
 
     #############################################
     # Skid Distance, Stand landing coords    #
     #############################################
-    SkidDist, coord_landing_stand = skidding.skidding(stand_wkt, landing_coords)
+    SkidDist, coord_landing_stand = skidding.skidding(stand_wkt, stand_landing_coords)
 
     #############################################
     # Harvest Cost                              #
@@ -68,7 +68,8 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
         'haul_cost_min': haulCost,
         'total_haul_cost': totalHaulCost,
         'mill_coordinates': coord_mill,
-        'landing_coordinates': coord_landing_stand,
+        'stand_landing_coordinates': coord_landing_stand,
+        'road_landing_coordiantes': coord_landing_road,
         'total_cost': totalCost
     }
 
