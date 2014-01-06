@@ -126,5 +126,7 @@ def routing(landing_coords, mill_coords=None, mill_shp=None, mill_filter=None):
         mill_ds.Destroy()  # clean up after ogr
     except UnboundLocalError:
         pass
+    
+    print "Routing finisehd: total_distance, total_time, coord_mill", total_distance, total_time, coord_mill_tuple   
 
     return total_distance, total_time, coord_mill_tuple
