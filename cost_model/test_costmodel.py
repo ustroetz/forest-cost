@@ -20,10 +20,10 @@ if __name__ == '__main__':
     mill_shp = 'testdata/mills.shp'
     #mill_coords = (-122.665014,45.519218)
 
-    # Landing Coordinates
+    # Road Landing Coordinates
     coords_landing_road = landing.road(roadfn,standfn)
     
-    # routing
+    # Routing
     haulDist, haulTime, coord_mill = r.routing(coords_landing_road,mill_coords=None, mill_shp=mill_shp)
         
     for stand in stand_lyr:
