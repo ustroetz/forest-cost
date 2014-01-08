@@ -17,10 +17,11 @@ def stand(stand_wkt,roadfn):
     #find closest point on road to stand
     road_shp = ogr.Open(roadfn)
     road_lyr = road_shp.GetLayer()
+
+    min_dist = maxint
+    
     for feat in road_lyr:
         geom = feat.GetGeometryRef()
-    
-        min_dist = maxint
 
         for line in geom:
             dist1 = sqrt((centroidLat-line.GetY(0))**2+(centroidLon-line.GetX(0))**2)
@@ -44,8 +45,6 @@ def stand(stand_wkt,roadfn):
                 sys.exit('ERROR: Could not find landing for stand')
     
     coords_landing_stand = coords_landing_stand[:-1]
-    
-    print "Stand Landing Created at: ", coords_landing_stand
     return coords_landing_stand
     
 def road(roadfn,standfn):
@@ -105,6 +104,5 @@ def road(roadfn,standfn):
     
     coords_landing_road = (coords_landing_road_geom.GetX(),coords_landing_road_geom.GetY())
         
-    print "Road Landing Created at: ", coords_landing_road
     return coords_landing_road
 

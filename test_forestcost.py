@@ -5,6 +5,7 @@ from forestcost import gis
 from forestcost import RoadModel as rm
 from pprint import pprint
 import ogr
+import os
 
 if __name__ == '__main__':
     
@@ -17,7 +18,8 @@ if __name__ == '__main__':
     mill_shp = 'testdata/mills.shp'  # in EPSG 3857
       
     # Create new road shapefile
-    rm.main(standfn,costSurface,newRoadsfn)
+    if os.path.exists(newRoadsfn) is not True:
+        rm.main(standfn,costSurface,newRoadsfn)
     
     # Road Landing Coordinates
     coords_landing_road = landing.road(newRoadsfn,standfn)
@@ -80,7 +82,7 @@ if __name__ == '__main__':
             haulTime,
             coord_mill)
         
-        pprint(cost)
+        pprint(cost)  
 
 
 
