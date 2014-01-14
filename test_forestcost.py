@@ -20,9 +20,7 @@ if __name__ == '__main__':
     # Create new road shapefile
     if os.path.exists(newRoadsfn) is not True:
         length, travelCost = rm.main(standfn,costSurface,newRoadsfn)
-        
-    lengthNewRoad, totaltravelCostNewRoad = 6558.95688446, 6472.64
-    
+            
     # Road Landing Coordinates
     coords_landing_road = landing.road(newRoadsfn,standfn)
     
