@@ -21,7 +21,7 @@ Additional information about the two moduls can be found in their individual rep
     ### GIS Data
     slope_raster = 'testdata/Slope.tif'
     elevation_raster = 'testdata/DEM.tif'
-    costSurface = 'testdata/CostSurface.tif'
+    costSurface = 'testdata/CostSurface.tif'# (in EPSG 32610)
     standfn = 'testdata/test_stands.shp'    # (in EPSG 3857)
     mill_shp = 'testdata/mills.shp'         # optional, alternativly coordinates of the mill can be provided (in EPSG 3857)
     newRoadsfn = 'testdata/newRoad.shp'     # name of new road shapefile to be created
