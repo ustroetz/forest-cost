@@ -10,6 +10,10 @@ The Forest Cost package consist of two major modules:
 
 Additional information about the two moduls can be found in their individual repositories. 
 
+### Requires
+
+`xlrd`, `python-gdal`, `requests`, `numpy`, and `skimage.graph`
+
 ### Sample Test Run
 
 ##### Input GIS Data
