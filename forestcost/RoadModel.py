@@ -25,7 +25,10 @@ def array2raster(newRasterfn,rasterfn,bbox,array):
 
 
 def array2shp(costSurfaceArray,osmRoadsArray,outSHPfn,newCostSurfacefn):
-    
+    """
+    Converts the costSurfaceArray to a line shapefile (where array == 0).
+    Returns length of new Shapefile in meters.
+    """
     
     ## New Road to geometry
     # max distance between points
@@ -127,7 +130,6 @@ def array2shp(costSurfaceArray,osmRoadsArray,outSHPfn,newCostSurfacefn):
     outFeature.SetGeometry(multilineOSMRoad)
     outFeature.SetField('type', 'existing')
     outLayer.CreateFeature(outFeature)
-
     
     return length
     
@@ -345,6 +347,14 @@ def getGridWidth(costSurfacefn):
         
     return gridWidth
             
+def getTravelCost(TravelCostArray,costSurfaceArray,osmRoadsArray):
+    """
+    Returns zonal statistics sum of area the new road covers on the cost surface
+    """
+    costSurfaceArray[osmRoadsArray == 1.0] = 1 # remove existing roads from new roads
+    travelCost = np.sum(TravelCostArray[costSurfaceArray == 0])
+    return travelCost
+    
 def osm2tif(bbox,costSurfacefn,osmRoadsSHPfn):
     def reprojectToWGS84(bbox,offsetBbox):  
         xmin,xmax,ymin,ymax = bbox
@@ -680,6 +690,9 @@ def main(standsfn,costSurfacefn,newRoadsfn,skidDist=0):
     
     bbox = createGrid(gridfn,bbox,offsetBbox,gridHeight,gridWidth) # creates 'grid.shp' and updates bbox based on grid's extent
     gridDict = createGridDict(gridfn,bufferfn) # creates dict (key=cellID; value: List of buffers intersecting cell)
+    #gridDict = eval((open('gridDict.txt', 'r')).read())    
+    #gridDictFile = open('gridDict.txt', 'w')
+    #gridDictFile.write(str(gridDict))    
     print 'Grid created'
     
     # update array (based on OSM streets, areas outside property, stand boundaries)
@@ -695,35 +708,37 @@ def main(standsfn,costSurfacefn,newRoadsfn,skidDist=0):
     poly2line(reprostandsfn,standsLinefn) # creates stands line shapefile
     standLinesarray = shp2array(standsLinefn,newCostSurfacefn) # creates array from stands line
     costSurfaceArray[standLinesarray == 1] /= 2    # updates array, stands boundaries    
-    
+    TravelCostArray = np.copy(costSurfaceArray)
     
     gridDict = removeBuffer(bufferfn,gridDict,newCostSurfacefn,costSurfaceArray) # removes buffers touching OSM roads
-    
-    while gridDict:
+
+    while gridDict:        
         print "remaining buffer:"
         printList(gridDict) 
             
         selectedCell, gridDict = selectCell(gridfn,bufferfn,gridDict,costSurfaceArray,newCostSurfacefn) # creates 'selectedCell'
-        print selectedCell
 
         costSurfaceArray = createPath(newCostSurfacefn,costSurfaceArray,selectedCell,gridfn) # updates array 'costSurfaceArray'
-
+        
         gridDict = removeBuffer(bufferfn,gridDict,newCostSurfacefn,costSurfaceArray) # removes buffers touching new road from gridDict
-        
-        
-    length = array2shp(costSurfaceArray,osmRoadsArray,newRoadsfn,newCostSurfacefn) # writes final roads in shapefile and returns length of new roads in meters
-        
-    print 'Length new roads (miles): ', length*0.000621371 
-            
+                
+    length = array2shp(costSurfaceArray,osmRoadsArray,newRoadsfn,newCostSurfacefn) # writes newRoad in shapefile and returns length (m)
+    
+    travelCost = getTravelCost(TravelCostArray,costSurfaceArray,osmRoadsArray) # sum of cells new road travel through
+    
     for filename in os.listdir('.'):
-        for pattern in ['buffer*','grid*','newCostSurface*','standsLine*','standsReprojected*','OSMroads*']:
+        for pattern in ['buffer*','grid*','newCostSurface*','standsLine*','standsReprojected*', 'OSMroads*']:
             if fnmatch.fnmatch(filename, pattern):
                 os.remove(filename)
-    
         
+    print 'Length new roads (miles): ', length*0.000621371 
+    print 'Cumulative travel costs:', travelCost
+    
+    return length, travelCost
+            
 if __name__ == "__main__":
     standsfn = 'testdata/test_stand.shp'
     costSurfacefn = 'testdata/CostSurface.tif'
     newRoadsfn = 'newRoad.shp'
     
-    main(standsfn,costSurfacefn,newRoadsfn)
+    length, travelCost = main(standsfn,costSurfacefn,newRoadsfn)

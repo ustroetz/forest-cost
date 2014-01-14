@@ -19,7 +19,9 @@ if __name__ == '__main__':
       
     # Create new road shapefile
     if os.path.exists(newRoadsfn) is not True:
-        rm.main(standfn,costSurface,newRoadsfn)
+        length, travelCost = rm.main(standfn,costSurface,newRoadsfn)
+        
+    lengthNewRoad, totaltravelCostNewRoad = 6558.95688446, 6472.64
     
     # Road Landing Coordinates
     coords_landing_road = landing.road(newRoadsfn,standfn)
@@ -30,6 +32,7 @@ if __name__ == '__main__':
         
     stand_shp = ogr.Open(standfn)
     stand_lyr = stand_shp.GetLayer()
+    standCount = stand_lyr.GetFeatureCount()
     for stand in stand_lyr:
                 
         stand_geom = stand.GetGeometryRef()
@@ -75,12 +78,17 @@ if __name__ == '__main__':
             HdwdFractionSLT,
             HdwdFractionLLT,
             PartialCut,
+            # road construction info
+            lengthNewRoad, 
+            totaltravelCostNewRoad,
+            standCount,
             # routing info
             coords_landing_stand,
             coords_landing_road,
             haulDist,
             haulTime,
-            coord_mill)
+            coord_mill
+            )
         
         pprint(cost)  
 

@@ -8,7 +8,7 @@ import harvesting
 def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
               RemovalsSLT, TreeVolSLT, RemovalsLLT, TreeVolLLT,
               HdwdFractionCT, HdwdFractionSLT, HdwdFractionLLT,
-              PartialCut, stand_landing_coords, coord_landing_road, haulDist, haulTime, coord_mill, NoHelicopter = False, NoHaulProportion = 1):
+              PartialCut, lengthNewRoad, totaltravelCostNewRoad, standCount, stand_landing_coords, coord_landing_road, haulDist, haulTime, coord_mill, NoHelicopter = False, NoHaulProportion = 1, roadConstructionCostPerFoot = 0, roadConstructionCostPerUnit = 0):
 
     #############################################
     # Skid Distance, Stand landing coords    #
@@ -49,9 +49,16 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
             totalHaulCost = round(haulTimeRT*haulCost*trips*NoHaulProportion)  # total costs for all trips
 
     #############################################
+    # Road Construction Cost                    #
+    #############################################
+    lengthNewRoadStand = lengthNewRoad*3.28084/standCount
+    travelCostStand = totaltravelCostNewRoad/standCount
+    totalConstructionCost = lengthNewRoadStand*roadConstructionCostPerFoot + travelCostStand*roadConstructionCostPerUnit
+
+    #############################################
     # Total Costs                               #
     #############################################
-    totalCost = totalHaulCost + totalHarvestCost
+    totalCost = totalHaulCost + totalHarvestCost + totalConstructionCost
 
     results = {
         'total_area': (round(Area, 2)),
@@ -70,6 +77,8 @@ def cost_func(Area, Elevation, Slope, stand_wkt, RemovalsCT, TreeVolCT,
         'mill_coordinates': coord_mill,
         'stand_landing_coordinates': coord_landing_stand,
         'road_landing_coordiantes': coord_landing_road,
+        'length_road_cosntruction': lengthNewRoadStand,
+        'road_construction_cost': totalConstructionCost,
         'total_cost': totalCost
     }
 
