@@ -11,11 +11,11 @@ if __name__ == '__main__':
     
     ### GIS Data
     slope_raster = 'testdata/Slope.tif'
-    elevation_raster = 'testdata/Slope.tif'
+    elevation_raster = 'testdata/DEM.tif'
     costSurface = 'testdata/CostSurface.tif'
-    newRoadsfn = 'testdata/newRoad.shp'  # in EPSG 3857
-    standfn = 'testdata/test_stands.shp' # in EPSG 3857
-    mill_shp = 'testdata/mills.shp'  # in EPSG 3857
+    standfn = 'testdata/test_stands.shp'    # in EPSG 3857
+    mill_shp = 'testdata/mills.shp'         # in EPSG 3857
+    newRoadsfn = 'testdata/newRoad.shp'     # name of new road shapefile to be created
       
     # Create new road shapefile
     if os.path.exists(newRoadsfn) is not True:
