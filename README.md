@@ -12,7 +12,7 @@ Additional information about the two moduls can be found in their individual rep
 
 ### Sample Test Run
 
-Input GIS Data
+##### Input GIS Data
 ```
     ### GIS Data
     slope_raster = 'testdata/Slope.tif'
@@ -23,6 +23,7 @@ Input GIS Data
     newRoadsfn = 'testdata/newRoad.shp'     # name of new road shapefile to be created
 ```
 <br/>
+##### Creating the logging roads
 Log Road Model runs. It creates the new shapefile, and returns the length (m) and cumulative travel cost of the traversed cells of the costsurface 
 ```
     # Create new road shapefile
@@ -30,18 +31,21 @@ Log Road Model runs. It creates the new shapefile, and returns the length (m) an
         length, travelCost = rm.main(standfn,costSurface,newRoadsfn)
 ```
 <br/>
+##### Finding the road landing
 The landing on the existing OSM roads is created. 
 ```
     # Road Landing Coordinates
     coords_landing_road = landing.road(newRoadsfn,standfn) # ((lon, lat) tuple)
 ```
 <br/>
+##### Routing
 If a mill shapefile is provided, the closest mill is determined. Else the specified coordinates are used. OSRM routing is used to determine the distance and time from the road landing to the closest mill.
 ```
     # Routing
     haulDist, haulTime, coord_mill = r.routing(coords_landing_road,mill_coords=None, mill_shp=mill_shp)
 ```
 <br/>
+##### Cost Calculation
 Harvest costs for each stand are determined and returned in a dictionary. Input tree data can be specified for each individual stand (here the same tree data are assumed for each stand.)
 ```
     stand_shp = ogr.Open(standfn)
