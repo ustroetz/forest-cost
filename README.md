@@ -105,7 +105,11 @@ Harvest costs for each stand are determined and returned in a dictionary. Input 
             coords_landing_road,
             haulDist,
             haulTime,
-            coord_mill
+            coord_mill,
+            NoHelicopter = False,           # optional parameter, if True, Helicopter logging will not be used (default False)
+            NoHaulProportion = 1,            # optional parameter, 1 = everything will be hauled, 0 = nothing will be hauled (default 1)
+            roadConstructionCostPerFoot = 0  # optional parameter, Cost ($ US/ft) for road construction, gets multiplied with length (based on created road shapefile) (default 0)
+            roadConstructionCostPerUnit = 0 # optional parameter, Cost ($ US) for road construction, gets multiplied with accumulative costs of traversed cells on the cost surface  (default 0)
             )
         
         pprint(cost)  
