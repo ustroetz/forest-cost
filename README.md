@@ -8,7 +8,7 @@ The Forest Cost package consist of two major modules:
 * [Log Road Model](https://github.com/ustroetz/log-road)
 * [Cost Model](https://github.com/ustroetz/cost_model)
 
-Additional information about the two can be found in their individual repositories. 
+Additional information about the two moduls can be found in their individual repositories. 
 
 ### Sample Test Run
 
