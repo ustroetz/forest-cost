@@ -2,7 +2,7 @@
 
 
 ### Overview
-The Forest Cost package estimates forest logging roads for a set of timber stands and calcualtes the harvest cost for each stand (stumpage two mill gate).
+The Forest Cost package estimates forest logging roads for a set of timber stands and calculates the harvest cost for each stand (stumpage two mill gate).
 
 The Forest Cost package consist of two major modules: 
 * [Log Road Model](https://github.com/ustroetz/log-road)
